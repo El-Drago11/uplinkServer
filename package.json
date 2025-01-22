@@ -1,0 +1,20 @@
+{
+  "name": "uplink",
+  "version": "1.0.0",
+  "description": "gaming admin/user",
+  "keywords": [
+    "nodejs",
+    "reactjs"
+  ],
+  "license": "ISC",
+  "author": "rahulsinghrawat",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev" : "nodemon index.js",
+    "start" : "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
