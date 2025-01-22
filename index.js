@@ -20,6 +20,10 @@ app.use(cors({
     credentials:true
 }))
 
+
+//App Routes
+app.use('/api/v1/auth',userRoute)
+
 //socket server setup
 const server = http.createServer(app);
 initializeTheSocket(server)
@@ -31,9 +35,6 @@ app.use("/",(req,res)=>{
         message:`Uplink live at port : ${port}`
     })
 })
-
-//App Routes
-app.use('/api/v1/auth',userRoute)
 
 server.listen(port,()=>{
     console.log(`Server started at port ${port}`)
