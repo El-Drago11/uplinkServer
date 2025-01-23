@@ -1,6 +1,6 @@
 require('dotenv').config();
-const socket = require("socket.io")
-// const {verifySocket } = require("../middlewares/auth");
+const socket = require("socket.io");
+const { verifySocket } = require('../middleware/auth');
 
 
 const frontendUrl = process.env.FRONT_END_URL
@@ -17,8 +17,8 @@ const initializeTheSocket = (server) => {
 
         //---> Verify token
         const token = socket.handshake.auth.token
-        // const isVerify = await verifySocket(token)
-        // if(!isVerify) return;
+        const isVerify = await verifySocket(token)
+        if(!isVerify) return;
         
         //-----> handle events
         socket.on("join-chat",({senderId,senderName,recieverId,recieverName})=>{
