@@ -8,6 +8,7 @@ const cors = require('cors')
 const http = require('http');
 const initializeTheSocket = require('./utils/socket');
 const userRoute = require('./routes/User')
+const adminRoute = require('./routes/Admin')
 
 //Db connection
 require('./config/database').connect()
@@ -23,6 +24,7 @@ app.use(cors({
 
 //App Routes
 app.use('/api/v1/auth',userRoute)
+app.use('/api/v1/admin',adminRoute)
 
 //socket server setup
 const server = http.createServer(app);

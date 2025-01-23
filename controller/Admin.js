@@ -1,6 +1,5 @@
 const User = require("../models/User")
 
-
 exports.getAdminDetails = async (req,res)=>{
 	try {
 		const adminDetail = await User.findOne({
@@ -28,7 +27,9 @@ exports.getAdminDetails = async (req,res)=>{
 exports.getAllRegisterUserDetail = async(req,res)=>{
 	try {
 		const registerUsers = await User.find({accountType:'Player'})
-		.populate('additionalDetails').exec();
+		.populate('additionalDetails')
+		.populate('gameDetails')
+		.exec();
 		res.status(200).json({
 			success:true,
 			message:'All student fetched',

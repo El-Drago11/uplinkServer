@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		gameDetails: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: "game",
+		},
 		// Add timestamps for when the document is created and last modified
 	},
 	{ timestamps: true }

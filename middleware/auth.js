@@ -52,6 +52,7 @@ exports.auth = async (req, res, next) => {
 
 exports.isPlayer = async (req, res, next) => {
     try {
+        console.log("Req : ",req)
         const userDetails = await User.findOne({ email: req.user.email });
 
         if (userDetails.accountType !== "Player") {

@@ -1,40 +1,56 @@
 require('dotenv').config();
 const socket = require("socket.io");
 const { verifySocket } = require('../middleware/auth');
+const game = require('../models/game');
 
 
 const frontendUrl = process.env.FRONT_END_URL
 
 const initializeTheSocket = (server) => {
-    //step-3: cors setup
+    //step-1: cors setup
     const io = socket(server, {
         cors: {
             origin: frontendUrl,
         }
     })
-    //step-4: when the web trying to connect with the backend
-    io.on("connection", async(socket) => {
 
-        //---> Verify token
-        const token = socket.handshake.auth.token
-        const isVerify = await verifySocket(token)
-        if(!isVerify) return;
-        
-        //-----> handle events
-        socket.on("join-chat",({senderId,senderName,recieverId,recieverName})=>{
-            //create a uniqueId
-            const roomId = [senderId,recieverId].sort().join('_').trim();
-            socket.join(roomId)
-        });
+    // Middleware for token verification
+    io.use(async (socket, next) => {
+        try {
+            const token = socket.handshake.auth.token;
+            if (!token) {
+                return next(new Error("Authentication error: Token is missing."));
+            }
 
-        socket.on("send-message",async({senderId,senderName,recieverId,recieverName,message})=>{
-            //step1: Get the roomId
-            const roomId = [senderId,recieverId].sort().join('_').trim();
-            //Step2: Send the message to the reciever 
-            io.to(roomId).emit("recieve-message",{senderId,recieverId,message})
-        })
-        socket.on("disconnect",()=>{})
+            const isVerified = await verifySocket(token);
+            if (isVerified) {
+                return next();
+            } else {
+                return next(new Error("Authentication error: Invalid token."));
+            }
+        } catch (err) {
+            return next(new Error("Authentication error: Internal server error."));
+        }
     });
+
+    //step-2: when the web trying to connect with the backend
+    io.on("connection", async (socket) => {
+        const gameId = socket.handshake.auth.gameId;
+        socket.on("click-event", async () => {
+            try {
+                await game.findOneAndUpdate(
+                    { _id: gameId }, // Filter by gameId
+                    { $inc: { clickCount: 1 } }, // Increment click count
+                );
+                return;
+            } catch (err) {
+                console.error("Database operation failed:", err.message);
+            }
+        });
+    
+        socket.on("disconnect", () => {});
+    });
+    
 }
 
 module.exports = initializeTheSocket;

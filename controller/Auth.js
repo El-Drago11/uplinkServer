@@ -2,7 +2,8 @@ const User = require('../models/User')
 const Profile = require('../models/Profile')
 const bcrypt = require('bcrypt')
 require('dotenv').config();
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const game = require('../models/game');
 
 exports.signUp = async(req,res)=>{
     try {
@@ -46,10 +47,14 @@ exports.signUp = async(req,res)=>{
 			about: null,
 			contactNumber: contactNumber,
 		});
+		const gameDetails = await game.create({
+			clickCount:0
+		});
 		const user = await User.create({firstName,lastName,email,contactNumber,password: hashedPassword,accountType: accountType,
 			approved: approved,
 			additionalDetails: profileDetails._id,
 			image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}${lastName}`,
+			gameDetails:gameDetails._id
 		});
 
 		return res.status(200).json({
@@ -82,7 +87,9 @@ exports.login = async (req, res) => {
 		}
 
 		// Find user with provided email
-		const user = await User.findOne({ email }).populate("additionalDetails");
+		const user = await User.findOne({ email })
+		.populate("additionalDetails")
+		.populate("gameDetails");
 
 		// If user not found with provided email
 		if (!user) {
