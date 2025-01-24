@@ -58,6 +58,9 @@ const initializeTheSocket = (server) => {
                 console.error("Database operation failed:", err.message);
             }
         });
+        socket.on('block-user',({playerId})=>{
+            io.to(playerId.toString()).emit('blocked-profile')
+        })
     
         socket.on("disconnect", () => {});
     });

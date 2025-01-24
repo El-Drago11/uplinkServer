@@ -42,3 +42,30 @@ exports.getAllRegisterUserDetail = async(req,res)=>{
 		})
 	}
 }
+
+exports.updateUserStatus = async(req,res)=>{
+	try {
+		const {playerId} = req.query;
+		const userStatus = await User.findOneAndUpdate(
+			{_id:playerId},
+			[{ $set: { approved: { $not: "$approved" } } }],
+			{ new: true } 
+		)
+		if(userStatus){
+			return res.status(200).json({
+				success:true,
+				message:"User status updated sucessfully"
+			})
+		}else{
+			return res.status(500).json({
+				success:false,
+				message:"Unable to update user"
+			})
+		}
+	} catch (error) {
+		return  res.status(500).json({
+			success:false,
+			message:"Inernal server error while updating user status"
+		})
+	}
+}

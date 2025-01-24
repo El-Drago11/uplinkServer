@@ -99,6 +99,12 @@ exports.login = async (req, res) => {
 				message: `User is not Registered with Us Please SignUp to Continue`,
 			});
 		}
+		if(!user.approved){
+			return res.status(401).json({
+				success: false,
+				message: `User is blocked by Admin`,
+			});
+		}
 
 		//Compare Password then Generate JWT token 
 		if (await bcrypt.compare(password, user.password)) {

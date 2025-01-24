@@ -52,14 +52,18 @@ exports.auth = async (req, res, next) => {
 
 exports.isPlayer = async (req, res, next) => {
     try {
-        console.log("Req : ",req)
         const userDetails = await User.findOne({ email: req.user.email });
-
         if (userDetails.accountType !== "Player") {
             return res.status(401).json({
                 success: false,
                 message: "This is a Protected Route for Students",
             });
+        }
+        if(!userDetails.active){
+            return res.status(401).json({
+                success:false,
+                message:"User is blocked by admin"
+            })
         }
         next();
     } catch (error) {
