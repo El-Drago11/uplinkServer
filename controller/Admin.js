@@ -30,10 +30,17 @@ exports.getAllRegisterUserDetail = async(req,res)=>{
 		.populate('additionalDetails')
 		.populate('gameDetails')
 		.exec();
+
+		const sortedUsers = registerUsers.sort((a, b) => {
+            const countA = a.gameDetails?.clickCount || 0;
+            const countB = b.gameDetails?.clickCount || 0;
+            return countB - countA;
+        });
+
 		res.status(200).json({
 			success:true,
 			message:'All student fetched',
-			data: registerUsers
+			data: sortedUsers
 		})
 	} catch (error) {
 		return res.status(500).json({

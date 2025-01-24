@@ -45,6 +45,7 @@ const initializeTheSocket = (server) => {
                 const gameResp  = await game.findOneAndUpdate(
                     { _id: gameId },
                     { $inc: { clickCount: 1 } },
+                    {new:true}
                 );
 
                 //setp2: Get user details
