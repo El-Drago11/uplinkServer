@@ -86,8 +86,10 @@ exports.login = async (req, res) => {
 			});
 		}
 
+		const userEmail = email.toLowerCase();
+
 		// Find user with provided email
-		const user = await User.findOne({ email })
+		const user = await User.findOne({ email:userEmail })
 		.populate("additionalDetails")
 		.populate("gameDetails");
 
