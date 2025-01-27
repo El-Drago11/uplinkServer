@@ -26,9 +26,18 @@ exports.getAdminDetails = async (req,res)=>{
 
 exports.getAllRegisterUserDetail = async(req,res)=>{
 	try {
+		const pageNo = parseInt(req?.query?.pageNo) || 1;
+		let pageSize = parseInt(req?.query?.pageSize) || 10;
+
+		pageSize = pageSize>25 ? 25 : pageSize
+
+		// Count the total number of users
+		const totalLength = await User.countDocuments({ accountType: 'Player' });
+		const totalPages = Math.ceil(totalLength/10)
+		
 		const registerUsers = await User.find({accountType:'Player'})
-		.populate('additionalDetails')
-		.populate('gameDetails')
+		.populate('additionalDetails').populate('gameDetails')
+		.skip((pageNo-1)*pageSize).limit(pageSize)
 		.exec();
 
 		const sortedUsers = registerUsers.sort((a, b) => {
@@ -40,7 +49,8 @@ exports.getAllRegisterUserDetail = async(req,res)=>{
 		res.status(200).json({
 			success:true,
 			message:'All student fetched',
-			data: sortedUsers
+			data: sortedUsers,
+			totalPages
 		})
 	} catch (error) {
 		return res.status(500).json({
