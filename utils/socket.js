@@ -39,12 +39,20 @@ const initializeTheSocket = (server) => {
         const token = socket.handshake.auth.token;
         const decode = await jwt.verify(token, process.env.JWT_SECRET);
         socket.join(decode.id.trim())
-        socket.on("click-event", async ({gameId}) => {
+        socket.on("click-event", async ({gameId,getCount}) => {
             try {
+                if(!gameId || !getCount) return new Error("Game details not found");
+
                 //step1: update user click in DB
+                const gameData = await game.findOne({_id:gameId})
+
+                if(!gameData) return new Error("Game not found");
+
+                const newCount =  (parseInt(getCount)+1) - gameData.clickCount
+
                 const gameResp  = await game.findOneAndUpdate(
                     { _id: gameId },
-                    { $inc: { clickCount: 1 } },
+                    { $inc: { clickCount: newCount } },
                     {new:true}
                 );
 
@@ -56,7 +64,7 @@ const initializeTheSocket = (server) => {
                 return ;
 
             } catch (err) {
-                console.error("Database operation failed:", err.message);
+                console.error("Database operation failed:", err);
             }
         });
         socket.on('block-user',({playerId})=>{
